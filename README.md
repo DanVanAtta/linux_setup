@@ -16,12 +16,17 @@ cd linux_setup
 
 ```
 
-https://help.github.com/articles/generating-a-new-gpg-key/
-https://help.github.com/articles/telling-git-about-your-gpg-key/
+
+### Git Commit Signing GPG Key Setup
+- [generate gpg key](https://help.github.com/articles/generating-a-new-gpg-key/)
+- [add key to git](https://help.github.com/articles/telling-git-about-your-gpg-key/)
+
+
+### Apps to install
 
 - [yed](https://www.yworks.com/products/yed/download)
 - [mysql workbench](http://dev.mysql.com/downloads/workbench/)
-
+- [intellij](https://www.jetbrains.com/idea/download/#section=linux)
 
 ## More Settings
 
