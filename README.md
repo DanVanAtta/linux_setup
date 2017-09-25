@@ -1,8 +1,6 @@
 ```
 ssh-keygen
 
-https://help.github.com/articles/generating-a-new-gpg-key/
-
 ## upload key to github
 
 sudo apt-get install git -y
@@ -17,6 +15,9 @@ cd linux_setup
 ./etc_host_ad_block
 
 ```
+
+https://help.github.com/articles/generating-a-new-gpg-key/
+https://help.github.com/articles/telling-git-about-your-gpg-key/
 
 - [yed](https://www.yworks.com/products/yed/download)
 - [mysql workbench](http://dev.mysql.com/downloads/workbench/)
