@@ -22,3 +22,17 @@ https://help.github.com/articles/telling-git-about-your-gpg-key/
 - [yed](https://www.yworks.com/products/yed/download)
 - [mysql workbench](http://dev.mysql.com/downloads/workbench/)
 
+
+## More Settings
+
+- Appearance > Behavior
+  - enable workspaces
+  - auto-hide launcher = on
+  - reveal sensitivity -> higher
+  - Brightness and lock
+  - turn screen off > 30 minutes
+- Security and Privacy
+  - Files and Applications
+    - record file and application usage > off
+  - Search
+    - include online search results > off
