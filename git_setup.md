@@ -9,6 +9,12 @@ ssh-keygen -t ed25519
 - [add key to git](https://help.github.com/articles/telling-git-about-your-gpg-key/)
 - [sign commits](https://help.github.com/articles/signing-commits/)
 
+Add alias:
+```
+alias gc='git commit -S'
+
+```
+
 ## SCM breeze https://github.com/ndbroadbent/scm_breeze
 ```
 git clone git://github.com/ndbroadbent/scm_breeze.git ~/.scm_breeze
