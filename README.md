@@ -1,12 +1,12 @@
 
 - set up keyboard shortcuts
-- Choose fastest mirror: https://linuxconfig.org/things-to-do-after-installing-ubuntu-18-04-bionic-beaver-linux
+- [Choose fastest mirror](https://linuxconfig.org/things-to-do-after-installing-ubuntu-18-04-bionic-beaver-linux)
 - run software update
 
-- [harden-kernel](/harden_kernel)
-- [apt-install](/apt_install)
-- [git-setup](/git-setup)
-- [dns-ad-block](/etc_host_ad_block)
+- [harden-kernel](/harden_kernel.md)
+- [apt-install](/apt_install.md)
+- [git-setup](/git-setup.md)
+- [dns-ad-block](/etc_host_ad_block.md)
 
 
 ### Apps to install
