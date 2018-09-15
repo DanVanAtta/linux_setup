@@ -17,6 +17,19 @@ git clone git://github.com/ndbroadbent/scm_breeze.git ~/.scm_breeze
 source ~/.bashrc
 ```
 
+## Git Tools
+
+
+```
+git clone git@github.com:DanVanAtta/git_tools.git ~/.git_tools
+
+## add to path
+grep -q 'git_tools' ~/.bashrc \
+    || (TOOL_HOME=~/.git_tools \
+          && echo -n 'PATH=$PATH:' >> ~/.bashrc \
+          && echo "$TOOL_HOME" >> ~/.bashrc)
+```
+
 ## Git config
 
 ```

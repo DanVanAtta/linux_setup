@@ -5,9 +5,8 @@
 
 - [harden-kernel](/harden_kernel.md)
 - [apt-install](/apt_install.md)
-- [git-setup](/git-setup.md)
+- [git-setup](/git_setup.md)
 - [dns-ad-block](/etc_host_ad_block.md)
-
 
 ### Apps to install
 
