@@ -7,7 +7,6 @@ sudo apt install -y npm vim gimp htop traceroute clamav shellcheck fail2ban \
   
 sudo npm install -g diff-so-fancy
 sudo gem install travis -v 1.8.2 --no-rdoc --no-ri
-sudo sensors-detect --auto
-sudo apt-get -y upgrade
+sudo apt -y upgrade
 sudo apt autoremove -y
 ```
