@@ -1,4 +1,0 @@
-#!/bin/bash
-
-export PATH="$PATH:/home/dan/work/linux_tools/bin"
-export PATH="$PATH:/home/dan/work/git_tools/bin"

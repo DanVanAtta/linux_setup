@@ -1,23 +1,11 @@
 ```
-sudo add-apt-repository ppa:fossfreedom/byzanz
-
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-
-sudo add-apt-repository ppa:webupd8team/sublime-text-3 -y
-sudo add-apt-repository ppa:webupd8team/java
-
 sudo apt-get update
 
-sudo apt-get install npm vim byzanz tiptop gimp htop traceroute apache2 virtualbox clamav shellcheck openvpn gimp htop oracle-java8-installer fail2ban ttf-liberation nmap iftop dos2unix git eclipse meld sublime-text-installer google-chrome-stable ntp ntpdate lm-sensors psensor unace unrar zip unzip p7zip-full p7zip-rar sharutils rar file-roller parallel expect ruby ruby-dev libxml2-utils iftop -y
-
+sudo apt-get npm install vim gimp htop traceroute clamav shellcheck fail2ban nmap iftop dos2unix git meld google-chrome-stable ntp ntpdate lm-sensors psensor unace unrar zip unzip p7zip-full p7zip-rar sharutils rar file-roller parallel expect ruby ruby-dev libxml2-utils -y
 
 sudo npm install -g diff-so-fancy
 sudo gem install travis -v 1.8.2 --no-rdoc --no-ri
-
 sudo sensors-detect --auto
-
 sudo apt-get -y upgrade
-
 sudo apt autoremove -y
 ```

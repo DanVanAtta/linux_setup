@@ -1,6 +1,0 @@
-#!/bin/bash
-
-alias gc="git commit -S"
-alias x="exit"
-alias sl="ls"
-
