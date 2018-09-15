@@ -7,6 +7,7 @@ ssh-keygen -t ed25519
 
 - [generate gpg key](https://help.github.com/articles/generating-a-new-gpg-key/)
 - [add key to git](https://help.github.com/articles/telling-git-about-your-gpg-key/)
+- [sign commits](https://help.github.com/articles/signing-commits/)
 
 
 
