@@ -22,3 +22,11 @@ sudo apt update
 apt-cache policy docker-ce
 sudo apt install docker-ce
 ```
+
+### Java 8
+
+```
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt update
+sudo apt install oracle-java8-installer
+```
