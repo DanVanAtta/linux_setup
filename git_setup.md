@@ -1,19 +1,31 @@
-#!/bin/bash
+## ssh key
+```
+ssh-keygen -t ed25519
+```
 
-GIT_NAME=$1
-GIT_EMAIL=$2
+## GPG Key
 
-function usage() {
-  echo "usage: $(basename $0) <git_name> <git_email>"
-  exit 1
-}
+- [generate gpg key](https://help.github.com/articles/generating-a-new-gpg-key/)
+- [add key to git](https://help.github.com/articles/telling-git-about-your-gpg-key/)
 
-if [[ -z "$GIT_NAME" ]] || [[ -z "$GIT_EMAIL" ]]; then
-  usage
-fi
+
+
+## SCM breeze https://github.com/ndbroadbent/scm_breeze
+```
+git clone git://github.com/ndbroadbent/scm_breeze.git ~/.scm_breeze
+~/.scm_breeze/install.sh
+source ~/.bashrc
+```
+
+## Git config
+
+```
+export GIT_NAME=
+export GIT_EMAIL=
 
 git config --global user.email "$GIT_EMAIL"
 git config --global user.name "$GIT_NAME"
+
 git config --global core.editor vi
 git config --global merge.tool meld
 git config --global core.autocrlf input
@@ -26,4 +38,4 @@ git config --global color.diff-highlight.oldNormal "red bold"
 git config --global color.diff-highlight.oldHighlight "red bold 52"
 git config --global color.diff-highlight.newNormal "green bold"
 git config --global color.diff-highlight.newHighlight "green bold 22"
-
+```

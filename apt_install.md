@@ -1,5 +1,4 @@
-#!/bin/bash
-
+```
 sudo add-apt-repository ppa:fossfreedom/byzanz
 
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
@@ -21,3 +20,4 @@ sudo sensors-detect --auto
 sudo apt-get -y upgrade
 
 sudo apt autoremove -y
+```

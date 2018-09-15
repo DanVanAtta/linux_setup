@@ -1,25 +1,12 @@
-```
-ssh-keygen
 
-## upload key to github
+- set up keyboard shortcuts
+- Choose fastest mirror: https://linuxconfig.org/things-to-do-after-installing-ubuntu-18-04-bionic-beaver-linux
+- run software update
 
-sudo apt-get install git -y
-
-git clone git@github.com:DanVanAtta/linux_setup.git
-cd linux_setup
-
-./harden_kernel
-./apt_install
-./git_setup "[Name]" "[email]"
-./scm_breeze
-./etc_host_ad_block
-
-```
-
-
-### Git Commit Signing GPG Key Setup
-- [generate gpg key](https://help.github.com/articles/generating-a-new-gpg-key/)
-- [add key to git](https://help.github.com/articles/telling-git-about-your-gpg-key/)
+- [harden-kernel](/harden_kernel)
+- [apt-install](/apt_install)
+- [git-setup](/git-setup)
+- [dns-ad-block](/etc_host_ad_block)
 
 
 ### Apps to install

@@ -1,4 +1,4 @@
-#!/bin/bash
+```
 
 sudo sed -i 's/\(kernel.kptr_restrict = \).*/\12/' /etc/sysctl.d/10-kernel-hardening.conf
 
@@ -25,4 +25,4 @@ sudo ufw allow 22
 
 ## tripleA port
 sudo ufw allow 3300
-
+```
