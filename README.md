@@ -1,4 +1,3 @@
-- [Choose fastest mirror](https://linuxconfig.org/things-to-do-after-installing-ubuntu-18-04-bionic-beaver-linux)
 - [harden-kernel](/harden_kernel.md)
 - [apt-install](/apt_install.md)
 - [git-setup](/git_setup.md)
