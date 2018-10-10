@@ -51,6 +51,8 @@ git config branch.autosetuprebase always --global
 git config --global push.default simple
 git config --global core.pager "diff-so-fancy | less --tabs=2 -RFX"
 
+git config --global mergetool.keepBackup false
+
 # fancy diff color
 git config --global color.diff-highlight.oldNormal "red bold"
 git config --global color.diff-highlight.oldHighlight "red bold 52"
