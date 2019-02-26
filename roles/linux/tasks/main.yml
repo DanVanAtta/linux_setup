@@ -1,0 +1,79 @@
+- name: upgrade apt
+  become: true
+  apt:
+    cache_valid_time: 86400 ## one day
+    upgrade: yes
+
+- name: install apt packages
+  become: true
+  register: apt_status
+  apt:
+    state: present
+    name:
+      - clamav
+      - curl
+      - dos2unix
+      - expect
+      - fail2ban
+      - file-roller
+      - gimp
+      - git
+      - htop
+      - iftop
+      - libxml2-utils
+      - lm-sensors
+      - meld
+      - nmap
+      - npm
+      - ntp
+      - ntpdate
+      - p7zip-full
+      - p7zip-rar
+      - parallel
+      - preload
+      - psensor
+      - unace
+      - rar
+      - ruby
+      - ruby-dev
+      - sharutils
+      - shellcheck
+      - traceroute
+      - unrar
+      - unzip
+      - wget
+      - vim
+      - zip
+
+- name: run sensors detect
+  shell: sensors-detect --auto
+  become: true
+  when: apt_status.changed
+
+- name: Remove dependencies that are no longer required
+  become: true
+  apt:
+    autoremove: yes
+
+- name:  Disable apt language DL  (https://itsfoss.com/speed-up-ubuntu-1310/)
+  become: true
+  lineinfile:
+    dest: /etc/apt/apt.conf.d/00aptitude
+    state: present
+    regexp: '^Acquire::Languages'
+    line: 'Acquire::Languages "none";'
+
+- name: reduce grub startup time (https://itsfoss.com/speed-up-ubuntu-1310/)
+  become: true
+  lineinfile:
+    dest: /etc/default/grub
+    state: present
+    regexp: '^GRUB_TIMEOUT=.*'
+    line: 'GRUB_TIMEOUT=2'
+  register: status
+
+- name: update grub
+  become: true
+  shell: update-grub
+  when: status.changed
+
