@@ -1,0 +1,3 @@
+#!/bin/bash
+sudo echo "[OK] Sudo is available"
+ansible-playbook -v -i "localhost," -c local java-dev-playbook.yml  

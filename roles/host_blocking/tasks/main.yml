@@ -1,0 +1,34 @@
+- name: check if hostblocking is in place
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "# Start StevenBlack"
+    line: "# Start StevenBlack"
+    state: present
+  check_mode: yes
+  register: host_status
+
+- name: download sources
+  get_url: 
+    url: https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts 
+    dest: /tmp/stevenBlack_hosts
+  when: host_status.changed
+
+- name: get host name
+  shell: hostname
+  register: output
+  when: host_status.changed
+
+- name: ensure 127.0.1.1 (hostname) is present
+  lineinfile:
+    dest: /tmp/stevenBlack_hosts
+    line: "127.0.1.1 {{ output.stdout }}"
+    insertbefore: "BOF"
+    state: present
+  when: host_status.changed
+
+- name: overwrite /etc/hosts
+  become: true
+  copy:
+    dest: /etc/hosts
+    src: /tmp/stevenBlack_hosts
+  when: host_status.changed

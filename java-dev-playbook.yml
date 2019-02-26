@@ -1,0 +1,6 @@
+- hosts: localhost
+  roles:
+    - linux
+    - host_blocking
+    - dot_files
+    
