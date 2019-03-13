@@ -1,3 +1,10 @@
+```
+git clone git@github.com:DanVanAtta/linux_setup.git
+sudo apt install ansible -y
+./run-ansible
+```
+
+
 - [Choose fastest mirror](https://linuxconfig.org/things-to-do-after-installing-ubuntu-18-04-bionic-beaver-linux)
 - [harden-kernel](/harden_kernel.md)
 - [apt-install](/apt_install.md)
@@ -7,11 +14,6 @@
 
 ### Apps to install
 
-Execute with: `run-ansible`
-
-
-##  TODO:
-- [ ] download URL of repo and command to run ansible-playbook to support first time case
 
 ## Also to install 
 
