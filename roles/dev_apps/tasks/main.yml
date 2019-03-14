@@ -1,0 +1,19 @@
+
+- name: create docker group
+  become: true
+  group: 
+    name: docker
+    state: present
+
+- name: sudoless docker commands
+  become: true 
+  user:
+    name={{ ansible_ssh_user }} 
+    groups=docker
+    append=yes
+
+- name: run docker on startup
+  service:
+    name: docker
+    state: started
+    enabled: true 
