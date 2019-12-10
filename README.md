@@ -1,6 +1,6 @@
 ```
 sudo apt install -y git ansible
-https://github.com/DanVanAtta/linux_setup.git
+git clone https://github.com/DanVanAtta/linux_setup.git
 git clone git@github.com:DanVanAtta/linux_setup.git
 ./run-ansible
 ```
