@@ -1,7 +1,11 @@
 ```
 sudo apt install -y git ansible
+rmdir Videos/ Templates/ Music/ Pictures/ Documents/ Public/
+mkdir work/
+cd work/
 git clone https://github.com/DanVanAtta/linux_setup.git
 git clone git@github.com:DanVanAtta/linux_setup.git
+cd linux-setup/
 ./run-ansible
 ```
 
