@@ -1,4 +1,5 @@
 ```
+ssh-keygen -t ed25519
 sudo apt install -y git ansible
 rmdir Videos/ Templates/ Music/ Pictures/ Documents/ Public/
 mkdir work/
