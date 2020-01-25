@@ -39,6 +39,7 @@
       - sharutils
       - shellcheck
       - traceroute
+      - tree
       - unrar
       - unzip
       - wget
