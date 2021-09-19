@@ -7,17 +7,17 @@
 - name: install apt packages
   become: true
   register: apt_status
-  apt:
+  package:
     state: present
     name:
       - clamav
+      - clamav-daemon
       - curl
       - dos2unix
       - expect
       - fail2ban
       - file-roller
       - gimp
-      - git
       - htop
       - iftop
       - libxml2-utils
@@ -30,9 +30,9 @@
       - p7zip-full
       - p7zip-rar
       - parallel
+      - postgresql-client
       - preload
       - psensor
-      - unace
       - rar
       - ruby
       - ruby-dev
@@ -40,10 +40,11 @@
       - shellcheck
       - traceroute
       - tree
+      - unace
       - unrar
       - unzip
-      - wget
       - vim
+      - wget
       - zip
 
 - name: run sensors detect

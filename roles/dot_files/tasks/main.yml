@@ -1,5 +1,5 @@
-- name:
+- name: Deploy VI config - copy {.vimrc} to home folder
   copy:
     src: vimrc
     dest: "{{ ansible_env.HOME }}/.vimrc"
-    
+

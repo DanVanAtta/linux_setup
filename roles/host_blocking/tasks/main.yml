@@ -29,6 +29,6 @@
 - name: overwrite /etc/hosts
   become: true
   copy:
-    dest: /etc/hosts
     src: /tmp/stevenBlack_hosts
+    dest: /etc/hosts
   when: host_status.changed

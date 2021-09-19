@@ -1,3 +1,48 @@
 #!/bin/bash
-sudo echo "[OK] Sudo is available"
-ansible-playbook -v -i "localhost," -c local java-dev-playbook.yml  
+
+set -eu
+
+# First check if we have a valid config file that stores username and email address
+# If we do not, then we will prompt user and create it
+configFile=/home/$USER/.linux-setup.conf
+
+function promptUserForSetupInfo() {
+  read -p 'Enter Author Name for Git: ' gitUsername
+  read -p 'Enter Email Address: ' gitEmail
+  echo ""
+  echo ""
+  echo "Answers cached in: $configFile, and will not be reprompted"
+  echo "Delete the cached file to be reprompted"
+  echo ""
+  echo ""
+
+  echo "git_user=$gitUsername" > $configFile
+  echo "git_email=$gitEmail" >> $configFile
+}
+
+if [ ! -f "$configFile" ] || ! grep -q "git_user" $configFile || ! grep -q "git_email" $configFile; then
+  promptUserForSetupInfo
+fi
+
+hash ansible-playbook 2> /dev/null || sudo apt install ansible -y
+
+gitUsername=$(grep "git_user" $configFile | sed 's/.*=//')
+gitEmail=$(grep "git_email" $configFile | sed 's/.*=//')
+
+if [ -z $gitUsername ] || [ -z "$gitEmail" ]; then
+  echo "Error reading Git author name and email from file: $configFile"
+  echo "Try deleting that file and re-running this script to recreate it."
+  exit 1
+fi
+
+echo "Type in your password to allow sudo commands to be run:"
+sudo echo "[OK] sudo access is granted"
+
+ansible-playbook \
+  --inventory "localhost," \
+  --connection local \
+  --extra-vars "git_author_name=$gitUsername" \
+  --extra-vars "git_email=$gitEmail" \
+  java-dev-playbook.yml
+
+

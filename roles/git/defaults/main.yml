@@ -1,0 +1,3 @@
+# username and email must be supplied to this role as parameters.
+git_author_name: ""
+git_email: ""

@@ -1,8 +1,7 @@
 - hosts: localhost
   roles:
+    - git
     - linux
     - host_blocking
     - dot_files
     - docker
-    - triplea
-    

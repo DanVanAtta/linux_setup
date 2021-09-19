@@ -1,0 +1,20 @@
+- name: Ensure requierd git configuration variables have been defined
+  assert:
+    that:
+      - git_author_name != ''
+      - git_email != ''
+
+- name: install Git
+  become: true
+  package:
+    state: present
+    name:
+      - git
+
+- name: deploy .gitconfig file
+  template:
+    src: gitconfig
+    dest: "{{ ansible_env.HOME }}/.gitconfig"
+    mode: 0644
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
