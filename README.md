@@ -4,12 +4,6 @@ git clone git@github.com:DanVanAtta/linux_setup.git
 ```
 
 - [Choose fastest mirror](https://linuxconfig.org/things-to-do-after-installing-ubuntu-18-04-bionic-beaver-linux)
-- [harden-kernel](/harden_kernel.md)
-- [apt-install](/apt_install.md)
-- [git-setup](/git_setup.md)
-- [dns-ad-block](/etc_host_ad_block.md)
-- [workspace-setup](/workspace_setup.md)
-
 
 
 ## ssh key
@@ -49,7 +43,10 @@ sudo sed -i 's/^#\(.*PasswordAuthentication\) .*/\1 no/' /etc/ssh/ssh_config
 # remove app armor 
 service apparmor stop
 update-rc.d -f apparmor remove
-sudo apt-get remove apparmor apparmor-utils -y
+sudo apt-get remove apparmor apparmor-utils
+
+## warning, the above may remove 'snap' (that is not desirable)
+## re-install snap with: sudo apt install -y snapd
 
 # firewall
 sudo ufw enable
@@ -65,4 +62,4 @@ Also:
 - set up keyboard shortcuts
 - run ubuntu software updater
 - [yed](https://www.yworks.com/products/yed/download)
-- [intellij](https://www.jetbrains.com/idea/download/#section=linux)
+- install intellij with snap 

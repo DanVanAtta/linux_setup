@@ -57,25 +57,3 @@
   apt:
     autoremove: yes
 
-- name:  Disable apt language DL  (https://itsfoss.com/speed-up-ubuntu-1310/)
-  become: true
-  lineinfile:
-    dest: /etc/apt/apt.conf.d/00aptitude
-    state: present
-    regexp: '^Acquire::Languages'
-    line: 'Acquire::Languages "none";'
-
-- name: reduce grub startup time (https://itsfoss.com/speed-up-ubuntu-1310/)
-  become: true
-  lineinfile:
-    dest: /etc/default/grub
-    state: present
-    regexp: '^GRUB_TIMEOUT=.*'
-    line: 'GRUB_TIMEOUT=2'
-  register: status
-
-- name: update grub
-  become: true
-  shell: update-grub
-  when: status.changed
-

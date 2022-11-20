@@ -4,7 +4,6 @@
 [core]
         editor = vi
         autocrlf = input
-        pager = diff-so-fancy | less --tabs=2 -RFX
 [merge]
         tool = meld
 [push]

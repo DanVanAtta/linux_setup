@@ -8,9 +8,9 @@
 - name: sudoless docker commands
   become: true 
   user:
-    name={{ ansible_ssh_user }} 
-    groups=docker
-    append=yes
+    name: "{{ lookup('ansible.builtin.env', 'USER') }}"
+    groups: docker
+    append: yes
 
 - name: run docker on startup
   service:
