@@ -10,14 +10,6 @@ git clone git@github.com:DanVanAtta/linux_setup.git
 - [dns-ad-block](/etc_host_ad_block.md)
 - [workspace-setup](/workspace_setup.md)
 
-### Apps to install
-
-
-## GPG Key
-
-- [generate gpg key](https://help.github.com/articles/generating-a-new-gpg-key/)
-- [add key to git](https://help.github.com/articles/telling-git-about-your-gpg-key/)
-- [sign commits](https://help.github.com/articles/signing-commits/)
 
 
 ## ssh key
@@ -26,11 +18,11 @@ ssh-keygen -t ed25519
 ```
 
 
-## SCM breeze https://github.com/ndbroadbent/scm_breeze
+## SCM breeze
+
 ```
-git clone git://github.com/ndbroadbent/scm_breeze.git ~/.scm_breeze
+git clone git@github.com:scmbreeze/scm_breeze.git ~/.scm_breeze
 ~/.scm_breeze/install.sh
-source ~/.bashrc
 ```
 
 
