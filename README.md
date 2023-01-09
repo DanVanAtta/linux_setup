@@ -1,3 +1,13 @@
+# Linux Setup
+
+This is my personal crib-sheet for setting up a new system.
+
+Contained is a mostly-automated full setup for a developer desktop
+running Ubuntu.  Provided is an idempotent 'run-setup' script that
+will do the  majority of the setup.  Also in this  README are a few
+additional notes for things to install and/or configure.
+
+
 ## Run setup:
 
 ```
