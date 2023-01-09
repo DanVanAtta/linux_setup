@@ -38,6 +38,18 @@ fi
 echo "Type in your password to allow sudo commands to be run:"
 sudo echo "[OK] sudo access is granted"
 
+
+# Disables kernel addresses from being visible to anyone, even root
+sudo sed -i 's/\(kernel.kptr_restrict = \).*/\12/' /etc/sysctl.d/10-kernel-hardening.conf
+# set all desktop start up to not be hidden
+sudo sed -i 's/NoDisplay=true/NoDisplay=false/g' /etc/xdg/autostart/*.desktop
+# disallow ssh password login
+sudo sed -i 's/^#\(.*PasswordAuthentication\) .*/\1 no/' /etc/ssh/ssh_config
+
+# cleanup boiler plate directories
+rm -rf ~/Documents/ ~/Music/ ~/Pictures/ ~/Public/ ~/Templates/ ~/Videos/
+
+
 ansible-playbook \
   --inventory "localhost," \
   --connection local \

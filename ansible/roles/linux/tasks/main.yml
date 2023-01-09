@@ -4,12 +4,52 @@
     cache_valid_time: 86400 ## one day
     upgrade: yes
 
+- name: install snap packages
+  become: true
+  snap:
+    name:
+      - brave
+      - intellij-idea-ultimate
+      - steam
+
+- name: stop app armor
+  become: true
+  service:
+    state: stopped
+    name: apparmor
+
+- name: remove app armor
+  become: true
+  command: update-rc.d -f apparmor remove
+
+- name: remove apparmor
+  become: true
+  package:
+    state: absent
+    name:
+      - apparmor
+      - apparmor-utils
+
+- name: make sure snapd is still present
+  become: true
+  package:
+    state: present
+    name: snapd
+
+- name: remove firefox snap
+  become: true
+  snap:
+    state: absent
+    name: firefox
+
 - name: install apt packages
   become: true
   register: apt_status
   package:
     state: present
     name:
+      - bash-completion
+      - ca-certificates
       - clamav
       - clamav-daemon
       - curl
@@ -18,10 +58,12 @@
       - fail2ban
       - file-roller
       - gimp
+      - gnupg
       - htop
       - iftop
       - libxml2-utils
       - lm-sensors
+      - lsb-release
       - meld
       - nmap
       - npm
@@ -33,7 +75,10 @@
       - postgresql-client
       - preload
       - psensor
+      - python3
+      - python-is-python3
       - rar
+      - rsyslog
       - ruby
       - ruby-dev
       - sharutils
@@ -44,6 +89,7 @@
       - unrar
       - unzip
       - vim
+      - whiptail
       - wget
       - zip
 
@@ -57,3 +103,15 @@
   apt:
     autoremove: yes
 
+- name: ensure firewall is running
+  become: true
+  service:
+    state: started
+    name: ufw
+    enabled: true
+
+- name: Upgrade all apt packages
+  become: true
+  apt:
+    update_cache: true
+    upgrade: dist

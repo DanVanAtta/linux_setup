@@ -1,15 +1,39 @@
+## Run setup:
+
 ```
+ssh-keygen -t ed25519
+ # Add SSH key to github.com
+sudo apt install -y git
+mkdir ~/work/
+cd ~/work/
 git clone git@github.com:DanVanAtta/linux_setup.git
+cd linux_setup/ansible
 ./run-ansible
 ```
 
-- [Choose fastest mirror](https://linuxconfig.org/things-to-do-after-installing-ubuntu-18-04-bionic-beaver-linux)
 
+## Install List
 
-## ssh key
-```
-ssh-keygen -t ed25519
-```
+The following are installed/configured:
+
+- Git: sets up git username & email
+- Git: adds config file with git defaults & settings
+- Docker: installs sudo-less docker
+- DNS: adds [DNS blacklist](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) 
+  which maps advertising and tracking hosts to '0.0.0.0'
+- Apt: installs a lot of packages, eg: clamav, zip, shellcheck
+- VIM: deploys vimrc file
+- Apps:
+   - Brave
+   - Intellij (ultimate)
+   - Steam
+  
+## Remove List
+
+- Boiler plate directories, eg: ~/Documents
+- apparmor
+- firefox
+
 
 
 ## SCM breeze
@@ -18,7 +42,6 @@ ssh-keygen -t ed25519
 git clone git@github.com:scmbreeze/scm_breeze.git ~/.scm_breeze
 ~/.scm_breeze/install.sh
 ```
-
 
 ```
 git clone git@github.com:DanVanAtta/git_tools.git ~/.git_tools
@@ -32,30 +55,8 @@ grep -q 'git_tools' ~/.bashrc \
 
 
 ```
-sudo sed -i 's/\(kernel.kptr_restrict = \).*/\12/' /etc/sysctl.d/10-kernel-hardening.conf
-
-# set all desktop start up to not be hidden
-sudo sed -i 's/NoDisplay=true/NoDisplay=false/g' /etc/xdg/autostart/*.desktop
-
-# disallow ssh password login
-sudo sed -i 's/^#\(.*PasswordAuthentication\) .*/\1 no/' /etc/ssh/ssh_config
-
-# remove app armor 
-service apparmor stop
-update-rc.d -f apparmor remove
-sudo apt-get remove apparmor apparmor-utils
-
 ## warning, the above may remove 'snap' (that is not desirable)
 ## re-install snap with: sudo apt install -y snapd
-
-# firewall
-sudo ufw enable
-```
-
-```
-cd ~
-rmdir Documents/ Music/ Pictures/ Public/ Templates/ Videos/
-mkdir work/
 ```
 
 Also:

@@ -30,10 +30,6 @@ sudo vi /etc/gdm3/custom.conf
 sudo update-grub2
 ```
 
-### Install packages not available on the very minimal server install
-```
-sudo apt whiptail ip-utils rsyslog python3 python3-is-python htop 
-```
 
 ### Start up Desktop GUI
 
@@ -41,7 +37,6 @@ sudo apt whiptail ip-utils rsyslog python3 python3-is-python htop
 sudo systemctl start gdm3
 ```
 
-### Upgrade to Ubuntu 22.10
 
 ```
 sudo ubuntu-drivers autoinstall
@@ -62,4 +57,13 @@ Brave: https://brave.com/linux/
 ```
 sudo snap install steam
 sudo snap install intellij-idea-ultimate --classic
+```
+
+
+
+## Install linux AMD GPU firmware
+
+```
+git clone https://kernel.googlesource.com/pub/scm/linux/kernel/git/firmware/linux-firmware.git
+sudo cp linux-firmware/amdgpu/* /lib/firmware/amdgpu && sudo update-initramfs -k all -u -v
 ```
