@@ -15,7 +15,7 @@
 
 ### Install OS (ubuntu-server to desktop)
 
-Had issues with USB install and needed to install an OS under 2GB (largest USB key I had on hand).
+Had issues with USB install and needed to install an OS under 2GB (to fit on the largest USB key that I had on hand).
 To do this, download the ubuntu-server ISO and load it on the USB key
 
 ### Install Ubuntu 22.04 (server)
@@ -26,7 +26,6 @@ Download ISO, flash to a USB key, boot from USB key, select minimal server. Once
 sudo apt install ubuntu-desktop
 sudo apt install gdm3 vim
 sudo vi /etc/gdm3/custom.conf
-  # Set the following: 'WaylandEnabled=true'
 sudo update-grub2
 ```
 
@@ -38,30 +37,23 @@ sudo systemctl start gdm3
 ```
 
 
-```
-sudo ubuntu-drivers autoinstall
-```
+
+## After logging into system & running setup & reboot
+
 
 ### Fix Fonts
 
 Add the following to `/etc/profile`
-
 ```
 export FONTCONFIG_PATH=/etc/fonts
 ```
 
-### Application installs
-
-Brave: https://brave.com/linux/
-
+### Install drivers
 ```
-sudo snap install steam
-sudo snap install intellij-idea-ultimate --classic
+sudo ubuntu-drivers autoinstall
 ```
 
-
-
-## Install linux AMD GPU firmware
+### Install linux AMD GPU firmware
 
 ```
 git clone https://kernel.googlesource.com/pub/scm/linux/kernel/git/firmware/linux-firmware.git
