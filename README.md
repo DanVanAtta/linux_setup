@@ -15,10 +15,14 @@ cd linux_setup/
 ## Install List
 
 The following are installed/configured:
-
-- Git: sets up git username & email
-- Git: adds config file with git defaults & settings
-- Docker: installs sudo-less docker
+ 
+- Grub boot menu will always be displayed on boot (5s timeout)
+- Security hardening configs
+- Git: 
+  - sets up git username & email
+  - add git config file with defaults & settings
+  - [SCM Breeze](https://github.com/scmbreeze/scm_breeze)
+- Docker: install docker
 - DNS: adds [DNS blacklist](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) 
   which maps advertising and tracking hosts to '0.0.0.0'
 - Apt: installs a lot of packages, eg: clamav, zip, shellcheck
@@ -35,13 +39,12 @@ The following are installed/configured:
 - firefox
 
 
+## Manual Install
 
-## SCM breeze
+- set up keyboard shortcuts
+- [yed](https://www.yworks.com/products/yed/download)
 
-```
-git clone git@github.com:scmbreeze/scm_breeze.git ~/.scm_breeze
-~/.scm_breeze/install.sh
-```
+### Git Tools
 
 ```
 git clone git@github.com:DanVanAtta/git_tools.git ~/.git_tools
@@ -53,14 +56,3 @@ grep -q 'git_tools' ~/.bashrc \
           && echo "$TOOL_HOME" >> ~/.bashrc)
 ```
 
-
-```
-## warning, the above may remove 'snap' (that is not desirable)
-## re-install snap with: sudo apt install -y snapd
-```
-
-Also:
-- set up keyboard shortcuts
-- run ubuntu software updater
-- [yed](https://www.yworks.com/products/yed/download)
-- install intellij with snap 
