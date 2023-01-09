@@ -7,8 +7,8 @@ sudo apt install -y git
 mkdir ~/work/
 cd ~/work/
 git clone git@github.com:DanVanAtta/linux_setup.git
-cd linux_setup/ansible
-./run-ansible
+cd linux_setup/
+./run-setup
 ```
 
 
