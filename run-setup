@@ -56,6 +56,6 @@ ANSIBLE_CONFIG=./ansible/ansible.cfg ansible-playbook \
   --connection local \
   --extra-vars "git_author_name=$gitUsername" \
   --extra-vars "git_email=$gitEmail" \
-  ansible/java-dev-playbook.yml
+  ansible/system-setup.yml
 
 
