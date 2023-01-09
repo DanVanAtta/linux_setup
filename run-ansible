@@ -50,11 +50,12 @@ sudo sed -i 's/^#\(.*PasswordAuthentication\) .*/\1 no/' /etc/ssh/ssh_config
 rm -rf ~/Documents/ ~/Music/ ~/Pictures/ ~/Public/ ~/Templates/ ~/Videos/
 
 
-ansible-playbook \
+
+ANSIBLE_CONFIG=./ansible/ansible.cfg ansible-playbook \
   --inventory "localhost," \
   --connection local \
   --extra-vars "git_author_name=$gitUsername" \
   --extra-vars "git_email=$gitEmail" \
-  java-dev-playbook.yml
+  ansible/java-dev-playbook.yml
 
 
