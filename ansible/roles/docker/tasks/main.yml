@@ -45,10 +45,3 @@
     name: "{{ lookup('ansible.builtin.env', 'USER') }}"
     groups: docker
     append: yes
-
-
-##- name: run docker on startup
-##  service:
-##    name: docker
-##    state: started
-##    enabled: true

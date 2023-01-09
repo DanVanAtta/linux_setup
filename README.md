@@ -22,7 +22,7 @@ The following are installed/configured:
   - sets up git username & email
   - add git config file with defaults & settings
   - [SCM Breeze](https://github.com/scmbreeze/scm_breeze)
-- Docker: install docker
+- Docker: install sudo-less docker (requires machine reboot)
 - DNS: adds [DNS blacklist](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) 
   which maps advertising and tracking hosts to '0.0.0.0'
 - Apt: installs a lot of packages, eg: clamav, zip, shellcheck
