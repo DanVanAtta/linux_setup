@@ -4,13 +4,6 @@
     cache_valid_time: 86400 ## one day
     upgrade: yes
 
-- name: install snap packages
-  become: true
-  snap:
-    name:
-      - brave
-      - intellij-idea-ultimate
-      - steam
 
 - name: stop app armor
   become: true
@@ -30,17 +23,6 @@
       - apparmor
       - apparmor-utils
 
-- name: make sure snapd is still present
-  become: true
-  package:
-    state: present
-    name: snapd
-
-- name: remove firefox snap
-  become: true
-  snap:
-    state: absent
-    name: firefox
 
 - name: install apt packages
   become: true
@@ -83,6 +65,7 @@
       - ruby-dev
       - sharutils
       - shellcheck
+      - snapd
       - traceroute
       - tree
       - unace
@@ -92,6 +75,27 @@
       - whiptail
       - wget
       - zip
+
+- name: install snap packages
+  become: true
+  snap:
+    name:
+      - brave
+      - intellij-idea-ultimate
+      - steam
+
+- name: make sure snapd is still present
+  become: true
+  package:
+    state: present
+    name: snapd
+
+- name: remove firefox snap
+  become: true
+  snap:
+    state: absent
+    name: firefox
+
 
 - name: run sensors detect
   shell: sensors-detect --auto
