@@ -1,7 +1,75 @@
 - hosts: localhost
+  vars:
+    user: "{{ ansible_facts['user_id'] }}"
+    group: "{{ ansible_facts['user_id'] }}"
+    user_home: "{{ ansible_facts['env']['HOME'] }}"
+    pat_token_keys:
+      - key: GITHUB_TOKEN
+        label: "GitHub Personal Access Token"
+      - key: INSTALL4J_LICENSE_KEY
+        label: "Install4J License Key"
+      - key: LINODE_TOKEN
+        label: "Linode API Key"
+      - key: TRIPLEA_ANSIBLE_VAULT_PASSWORD
+        label: "Vault password for TripleA"
+      - key: TF_TOKEN_app_terraform_io
+        label: "Terraform Cloud API Token"
+  environment: "{{ pat_env | default({}) }}"
+  pre_tasks:
+    - name: Install libsecret-tools (for GNOME Keyring access)
+      become: true
+      apt:
+        name: libsecret-tools
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Check which PAT tokens are already in the keyring
+      command: secret-tool lookup service pat_tokens key {{ item.key }}
+      register: keyring_check
+      loop: "{{ pat_token_keys }}"
+      changed_when: false
+      failed_when: false
+      no_log: true
+
+    - name: Prompt for any missing PAT tokens
+      pause:
+        prompt: "Enter value for {{ item.item.label }} ({{ item.item.key }})"
+        echo: false
+      when: item.rc != 0
+      loop: "{{ keyring_check.results }}"
+      register: token_prompts
+      no_log: true
+
+    - name: Store missing PAT tokens in GNOME Keyring
+      shell: |
+        printf '%s' {{ item.user_input | quote }} | \
+          secret-tool store --label={{ item.item.item.label | quote }} \
+            service pat_tokens key {{ item.item.item.key }}
+      when: item.user_input is defined and item.user_input != ""
+      loop: "{{ token_prompts.results }}"
+      no_log: true
+
+    - name: Load all PAT tokens from keyring into Ansible facts
+      command: secret-tool lookup service pat_tokens key {{ item.key }}
+      register: pat_token_values
+      loop: "{{ pat_token_keys }}"
+      changed_when: false
+      no_log: true
+
+    - name: Build pat_env dict from keyring values
+      set_fact:
+        pat_env: "{{ pat_env | default({}) | combine({item.item.key: item.stdout | trim}) }}"
+      loop: "{{ pat_token_values.results }}"
+      no_log: true
+
   roles:
-    - git
-    - linux
-    - host_blocking
-    - dot_files
     - docker
+    - dot_files
+    - git/gh_command
+    - git/local_config
+    - git/scm_breeze
+    - gnome
+    - grub
+    - {name: host_blocking, tags: host_blocking}
+    - linux

@@ -1,0 +1,12 @@
+%echo Generating GPG key for git signing
+Key-Type: RSA
+Key-Length: 4096
+Subkey-Type: RSA
+Subkey-Length: 4096
+Name-Real: {{ git_author_name.stdout }}
+Name-Email: {{ git_email.stdout }}
+Expire-Date: 0
+Passphrase: {{ gpg_passphrase }}
+%commit
+%echo done
+

@@ -1,6 +1,9 @@
-[user]
-        email = {{ git_email }}
-        name = {{ git_author_name }}
+[include]
+        path = {{ git_user_name_config }}
+[includeIf "gitdir:~/"]
+        path = {{ git_gpg_key_config }}
+[include]
+        path = {{ git_github_credential_config }}
 [core]
         editor = vi
         autocrlf = input

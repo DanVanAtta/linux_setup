@@ -1,0 +1,10 @@
+---
+- name: Clone scm_breeze repository
+  git:
+    repo: git@github.com:scmbreeze/scm_breeze.git
+    dest: "~/.scm_breeze"
+    clone: yes
+    update: no
+
+- name: Install scm_breeze
+  command: ~/.scm_breeze/install.sh

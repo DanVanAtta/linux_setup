@@ -1,0 +1,192 @@
+- name: install git and global config file
+  when: not ansible_check_mode
+  block:
+    - name: install Git
+      become: true
+      package:
+        state: present
+        name:
+          - git
+    - name: deploy .gitconfig file
+      template:
+        src: gitconfig
+        dest: "{{ ansible_facts['env']['HOME'] }}/.gitconfig"
+        mode: 0644
+        owner: "{{ user }}"
+        group: "{{ group }}"
+
+- name: deploy local configurations
+  block:
+    - name: ensure git (additional) config directory exists
+      file:
+        state: directory
+        path: "{{ git_local_config_dir }}"
+        mode: "0755"
+        owner: "{{ user }}"
+        group: "{{ group }}"
+
+    - name: query for git config user.name
+      shell: git config user.name
+      register: git_user_name
+      failed_when: false
+      changed_when: false
+
+    - name: configure local user
+      when: not git_user_name.stdout
+      block:
+        - name: Prompt for git user name
+          ansible.builtin.pause:
+            prompt: "Enter your desired git user name"
+          register: git_user_name_input
+
+        - name: Prompt for git user email
+          ansible.builtin.pause:
+            prompt: "Enter your desired git email"
+          register: git_user_email_input
+
+        - name: deploy git config for username and email
+          template:
+            src: user-name.local
+            dest: "{{ git_user_name_config }}"
+            mode: "0640"
+            owner: "{{ user }}"
+            group: "{{ group }}"
+
+    - name: check if GPG signing key is already configured in git
+      shell: git config user.signingkey
+      register: git_signing_key
+      failed_when: false
+      changed_when: false
+
+    - name: configure GPG signing key
+      when: not git_signing_key.stdout
+      block:
+        - name: register git author name
+          shell: git config user.name
+          register: git_author_name
+
+        - name: register git author email
+          shell: git config user.email
+          register: git_email
+
+        - name: generate GPG key
+          block:
+            - name: generate random passphrase
+              shell: openssl rand -base64 32
+              register: gpg_passphrase_result
+              no_log: true
+
+            - name: set passphrase fact
+              set_fact:
+                gpg_passphrase: "{{ gpg_passphrase_result.stdout }}"
+              no_log: true
+
+            - name: render GPG batch keygen file
+              template:
+                src: gpg-gen-key-batch.j2
+                dest: /tmp/gpg-gen-key-batch
+                mode: "0600"
+                owner: "{{ user }}"
+                group: "{{ group }}"
+              no_log: true
+
+            - name: generate GPG key via batch file
+              shell: gpg --batch --gen-key /tmp/gpg-gen-key-batch
+              register: gpg_gen_result
+
+            - name: remove batch file
+              file:
+                path: /tmp/gpg-gen-key-batch
+                state: absent
+
+            - name: retrieve new GPG key ID
+              shell: >
+                gpg --list-secret-keys --keyid-format LONG "{{ git_email.stdout }}"
+                | grep sec
+                | awk '{print $2}'
+                | cut -d'/' -f2
+              register: gpg_key_id_result
+
+            - name: set GPG key ID fact
+              set_fact:
+                gpg_key_id: "{{ gpg_key_id_result.stdout | trim }}"
+
+            - name: configure gpg-agent for long cache TTL (passwordless experience)
+              template:
+                src: gpg-agent.conf.j2
+                dest: "{{ ansible_facts['env']['HOME'] }}/.gnupg/gpg-agent.conf"
+                mode: "0600"
+                owner: "{{ user }}"
+                group: "{{ group }}"
+
+            - name: reload gpg-agent
+              shell: gpg-connect-agent reloadagent /bye
+              ignore_errors: true
+
+            - name: pre-load passphrase into gpg-agent so subsequent git operations are passwordless
+              shell: >
+                echo "{{ gpg_passphrase }}" |
+                gpg --batch --pinentry-mode loopback --passphrase-fd 0
+                --sign --armor --output /dev/null /dev/null 2>/dev/null || true
+              no_log: true
+              ignore_errors: true
+
+            - name: deploy git config snippet for GPG signing key
+              template:
+                src: gpg-key.local
+                dest: "{{ git_gpg_key_config }}"
+                mode: "0640"
+                owner: "{{ user }}"
+                group: "{{ group }}"
+
+            - name: export GPG public key to file
+              shell: gpg --armor --export "{{ gpg_key_id }}" > /tmp/gpg-public-key.asc
+
+- name: Upload GPG public key to GitHub (idempotent)
+  block:
+    - name: Get configured GPG signing key from git
+      shell: git config user.signingkey
+      register: configured_signing_key
+      failed_when: false
+      changed_when: false
+
+    - name: Check if GPG key is already on GitHub
+      shell: gh gpg-key list --json keyId -q '.[].keyId' | grep -Fi "{{ configured_signing_key.stdout | trim }}" | head -c1
+      register: gpg_key_on_github
+      failed_when: false
+      changed_when: false
+      when: configured_signing_key.stdout | trim != ""
+
+    - name: Export GPG public key to file (if not on GitHub yet)
+      shell: gpg --armor --export "{{ configured_signing_key.stdout | trim }}" > /tmp/gpg-public-key.asc
+      when:
+        - configured_signing_key.stdout | trim != ""
+        - gpg_key_on_github.stdout | default('') == ""
+
+    - name: Upload GPG public key to GitHub via gh CLI
+      shell: gh gpg-key add /tmp/gpg-public-key.asc
+      register: gh_gpg_upload
+      failed_when:
+        - gh_gpg_upload.rc != 0
+        - "'already exist' not in gh_gpg_upload.stderr"
+      when:
+        - configured_signing_key.stdout | trim != ""
+        - gpg_key_on_github.stdout | default('') == ""
+
+    - name: Remove exported public key file
+      file:
+        path: /tmp/gpg-public-key.asc
+        state: absent
+      when:
+        - configured_signing_key.stdout | trim != ""
+        - gpg_key_on_github.stdout | default('') == ""
+
+- name: deploy GitHub HTTPS credential helper config
+  template:
+    src: github-credential.local.config
+    dest: "{{ git_github_credential_config }}"
+    mode: "0640"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+
+

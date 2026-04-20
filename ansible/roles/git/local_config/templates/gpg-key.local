@@ -1,0 +1,6 @@
+[user]
+	signingkey = {{ gpg_key_id }}
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true

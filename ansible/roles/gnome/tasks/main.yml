@@ -1,0 +1,86 @@
+- name: update gnome default folders
+  block:
+  - name: deploy xdg directory config templates
+    register: xdg_config
+    template:
+      src: user-dirs.dirs
+      dest: "{{ ansible_facts['env']['HOME'] }}/.config/user-dirs.dirs"
+      mode: "0644"
+      owner: "{{ user }}"
+      group: "{{ group }}"
+
+  - name: run update dirs command
+    when: xdg_config.changed
+    shell: xdg-user-dirs-update
+
+  - name: clean up old folders
+    file:
+      state: absent
+      path: "{{ item }}"
+    with_items:
+      - "{{ ansible_facts['env']['HOME'] }}/Documents/"
+      - "{{ ansible_facts['env']['HOME'] }}/Music/"
+      - "{{ ansible_facts['env']['HOME'] }}/Pictures/"
+      - "{{ ansible_facts['env']['HOME'] }}/Public/"
+      - "{{ ansible_facts['env']['HOME'] }}/Templates/"
+      - "{{ ansible_facts['env']['HOME'] }}/Videos/"
+
+- name: configure gnome settings
+  community.general.dconf:
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+  loop:
+    - key: /org/gnome/settings-daemon/plugins/color/night-light-enabled
+      value: "true"
+    - key: /org/gnome/settings-daemon/plugins/color/night-light-schedule-automatic
+      value: "true"
+    #    - key: /org/gnome/settings-daemon/plugins/color/night-light-schedule-from
+    #      value: "20.0"
+    #    - key: /org/gnome/settings-daemon/plugins/color/night-light-schedule-to
+    #      value: "7.0"
+    - key: /org/gnome/settings-daemon/plugins/color/night-light-temperature
+      value: "uint32 3500"
+    # suspend on idle -> disabled
+    - key: /org/gnome/settings-daemon/plugins/power/sleep-inactive-ac-type
+      value: "'nothing'"
+    - key: /org/gnome/settings-daemon/plugins/power/sleep-inactive-battery-type
+      value: "'nothing'"
+    # hot corner -> off
+    - key: /org/gnome/desktop/interface/enable-hot-corners
+      value: "false"
+    # active screen edges (edge tiling) -> on
+    - key: /org/gnome/mutter/edge-tiling
+      value: "true"
+    # workspaces -> dynamic
+    - key: /org/gnome/mutter/dynamic-workspaces
+      value: "true"
+    # workspaces on primary display only -> true
+    - key: /org/gnome/mutter/workspaces-only-on-primary
+      value: "true"
+    # app switching -> current workspace only
+    - key: /org/gnome/shell/app-switcher/current-workspace-only
+      value: "true"
+    # appearance -> dark theme
+    - key: /org/gnome/desktop/interface/color-scheme
+      value: "'prefer-dark'"
+    # dock position -> left
+    - key: /org/gnome/shell/extensions/dash-to-dock/dock-position
+      value: "'LEFT'"
+    # mouse scroll -> traditional (not natural)
+    - key: /org/gnome/desktop/peripherals/mouse/natural-scroll
+      value: "false"
+    # blank screen delay -> 15 minutes (900 seconds)
+    - key: /org/gnome/desktop/session/idle-delay
+      value: "uint32 900"
+    # automatic screen lock -> true
+    - key: /org/gnome/desktop/screensaver/lock-enabled
+      value: "true"
+
+- name: Show all desktop autostart entries (NoDisplay=false)
+  ansible.builtin.replace:
+    path: "{{ item }}"
+    regexp: 'NoDisplay=true'
+    replace: 'NoDisplay=false'
+  with_fileglob:
+    - /etc/xdg/autostart/*.desktop
+  become: true

@@ -1,0 +1,6 @@
+# paths
+git_local_config_dir: "~/.config/git"
+git_user_name_config: "{{ git_local_config_dir }}/user-name.local"
+git_gpg_key_config: "{{ git_local_config_dir }}/gpg-key.local"
+git_github_credential_config: "{{ git_local_config_dir }}/github-credential.local"
+

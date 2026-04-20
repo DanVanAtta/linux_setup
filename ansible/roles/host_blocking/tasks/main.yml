@@ -1,34 +1,28 @@
-- name: check if hostblocking is in place
-  lineinfile:
-    dest: /etc/hosts
-    regexp: "# Start StevenBlack"
-    line: "# Start StevenBlack"
-    state: present
-  check_mode: yes
-  register: host_status
-
-- name: download sources
-  get_url: 
-    url: https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts 
-    dest: /tmp/stevenBlack_hosts
-  when: host_status.changed
-
-- name: get host name
-  shell: hostname
-  register: output
-  when: host_status.changed
-
-- name: ensure 127.0.1.1 (hostname) is present
-  lineinfile:
-    dest: /tmp/stevenBlack_hosts
-    line: "127.0.1.1 {{ output.stdout }}"
-    insertbefore: "BOF"
-    state: present
-  when: host_status.changed
-
-- name: overwrite /etc/hosts
+- name: ensure git is installed
   become: true
-  copy:
-    src: /tmp/stevenBlack_hosts
+  package:
+    name: git
+    state: present
+
+- name: clone or pull StevenBlack hosts repo
+  git:
+    repo: https://github.com/StevenBlack/hosts.git
+    dest: "{{ user_home }}/.stevenblack-hosts"
+    version: master
+    update: yes
+    depth: 1
+  register: git_result
+
+- name: get hostname
+  command: hostname
+  register: hostname_output
+  changed_when: false
+
+- name: write /etc/hosts from repo with local hostname prepended
+  become: true
+  template:
+    src: stevenblack_hosts.j2
     dest: /etc/hosts
-  when: host_status.changed
+  vars:
+    local_hostname: "{{ hostname_output.stdout }}"
+  when: git_result.changed

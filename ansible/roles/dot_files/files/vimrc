@@ -1,2 +1,16 @@
 set tabstop=2
+set shiftwidth=2
 set expandtab
+
+set number
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+filetype on
+filetype plugin on
+filetype indent on
+autocmd FileType c,cpp,java set formatoptions+=ro
+autocmd FileType c set omnifunc=ccomplete#Complete
+autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0

@@ -1,0 +1,7 @@
+- name: snapd_running
+  when: not ansible_check_mode
+  become: true
+  service:
+    state: started
+    enabled: true
+    name: snapdw

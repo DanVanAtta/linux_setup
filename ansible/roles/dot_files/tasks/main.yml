@@ -1,5 +1,34 @@
-- name: Deploy VI config - copy {.vimrc} to home folder
-  copy:
-    src: vimrc
-    dest: "{{ ansible_env.HOME }}/.vimrc"
+---
+# Note: libsecret-tools install, keyring prompting/storing, and token loading
+# are handled in pre_tasks of system-setup.yml so tokens are available
+# as env vars (pat_env) to all roles. This role handles only file deployment.
 
+- name: Deploy dot files to home folder
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    backup: true
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0644"
+  with_items:
+    - src: vimrc
+      dest: "{{ user_home }}/.vimrc"
+    - src: bash_aliases
+      dest: "{{ user_home }}/.bash_aliases"
+
+
+- name: Deploy .pat_tokens from template
+  template:
+    src: pat_tokens.j2
+    dest: "{{ user_home }}/.pat_tokens"
+    mode: "0600"
+
+- name: Ensure .bashrc sources .pat_tokens
+  blockinfile:
+    path: "{{ user_home }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      if [ -f ~/.pat_tokens ]; then
+        source ~/.pat_tokens
+      fi

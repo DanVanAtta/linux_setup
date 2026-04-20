@@ -41,12 +41,6 @@ The following are installed/configured:
    - Brave
    - Intellij (ultimate)
    - Steam
-  
-## Remove List
-
-- Boiler plate directories, eg: ~/Documents
-- apparmor
-- firefox
 
 
 ## Manual Install
