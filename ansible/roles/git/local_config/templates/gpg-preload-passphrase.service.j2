@@ -1,0 +1,10 @@
+[Unit]
+Description=Preload GPG passphrase into gpg-agent from GNOME Keyring
+After=gnome-keyring-daemon.service graphical-session.target
+Wants=gnome-keyring-daemon.service
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/gpg-preload-passphrase.sh
+RemainAfterExit=no
+[Install]
+WantedBy=default.target

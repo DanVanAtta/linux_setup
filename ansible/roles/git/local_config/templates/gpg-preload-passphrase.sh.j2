@@ -1,0 +1,31 @@
+#!/bin/bash
+# Retrieves the GPG passphrase from GNOME Keyring and preloads it into gpg-agent.
+# Run at login via systemd user service so git signing is passwordless every session.
+
+set -euo pipefail
+
+KEY_ID=$(git config user.signingkey 2>/dev/null || true)
+if [ -z "$KEY_ID" ]; then
+  echo "gpg-preload: no signing key configured in git, skipping." >&2
+  exit 0
+fi
+
+KEYGRIP=$(gpg --with-keygrip --list-secret-keys "$KEY_ID" 2>/dev/null \
+  | grep Keygrip | head -1 | awk '{print $3}')
+if [ -z "$KEYGRIP" ]; then
+  echo "gpg-preload: could not determine keygrip for $KEY_ID, skipping." >&2
+  exit 0
+fi
+
+PASSPHRASE=$(secret-tool lookup gpg-key-id "$KEY_ID" 2>/dev/null || true)
+if [ -z "$PASSPHRASE" ]; then
+  echo "gpg-preload: no passphrase found in keyring for $KEY_ID, skipping." >&2
+  exit 0
+fi
+
+# Ensure gpg-agent is running
+gpg-agent --daemon 2>/dev/null || true
+
+/usr/lib/gnupg/gpg-preset-passphrase --preset "$KEYGRIP" <<< "$PASSPHRASE"
+echo "gpg-preload: passphrase preloaded for key $KEY_ID (keygrip $KEYGRIP)."
+

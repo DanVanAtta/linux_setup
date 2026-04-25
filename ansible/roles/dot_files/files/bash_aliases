@@ -12,4 +12,4 @@ alias .6="cd ../../../../../../"
 
 alias x="exit"
 alias sl="ls"
-
+alias gamen="git commit --amend"

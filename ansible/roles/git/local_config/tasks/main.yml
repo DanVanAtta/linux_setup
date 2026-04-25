@@ -1,12 +1,14 @@
 - name: install git and global config file
   when: not ansible_check_mode
   block:
-    - name: install Git
+    - name: install Git and GPG keyring tools
       become: true
       package:
         state: present
         name:
           - git
+          - libsecret-tools
+          - gnupg-utils
     - name: deploy .gitconfig file
       template:
         src: gitconfig
@@ -59,7 +61,7 @@
       changed_when: false
 
     - name: configure GPG signing key
-      when: not git_signing_key.stdout
+#      when: not git_signing_key.stdout
       block:
         - name: register git author name
           shell: git config user.name
@@ -105,6 +107,8 @@
                 | grep sec
                 | awk '{print $2}'
                 | cut -d'/' -f2
+                | sort
+                | head -1
               register: gpg_key_id_result
 
             - name: set GPG key ID fact
@@ -141,6 +145,49 @@
 
             - name: export GPG public key to file
               shell: gpg --armor --export "{{ gpg_key_id }}" > /tmp/gpg-public-key.asc
+
+            - name: store passphrase in GNOME Keyring
+              shell: >
+                echo -n "{{ gpg_passphrase }}" |
+                secret-tool store --label="GPG passphrase for git signing ({{ gpg_key_id }})"
+                gpg-key-id "{{ gpg_key_id }}"
+              no_log: true
+
+            - name: ensure local bin directory exists
+              file:
+                state: directory
+                path: "{{ ansible_facts['env']['HOME'] }}/.local/bin"
+                mode: "0755"
+                owner: "{{ user }}"
+                group: "{{ group }}"
+
+            - name: deploy GPG passphrase preload script
+              template:
+                src: gpg-preload-passphrase.sh.j2
+                dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/gpg-preload-passphrase.sh"
+                mode: "0750"
+                owner: "{{ user }}"
+                group: "{{ group }}"
+
+            - name: ensure systemd user service directory exists
+              file:
+                state: directory
+                path: "{{ ansible_facts['env']['HOME'] }}/.config/systemd/user"
+                mode: "0755"
+                owner: "{{ user }}"
+                group: "{{ group }}"
+
+            - name: deploy GPG passphrase preload systemd user service
+              template:
+                src: gpg-preload-passphrase.service.j2
+                dest: "{{ ansible_facts['env']['HOME'] }}/.config/systemd/user/gpg-preload-passphrase.service"
+                mode: "0644"
+                owner: "{{ user }}"
+                group: "{{ group }}"
+
+            - name: enable GPG passphrase preload service for login
+              shell: systemctl --user enable gpg-preload-passphrase.service
+              ignore_errors: true
 
 - name: Upload GPG public key to GitHub (idempotent)
   block:
