@@ -4,18 +4,60 @@
         path = {{ git_gpg_key_config }}
 [include]
         path = {{ git_github_credential_config }}
-[core]
-        editor = vi
-        autocrlf = input
-[merge]
-        tool = meld
-[push]
-        default = current
+[branch]
+        sort =  -committerdate
+[column]
+        ui = auto
+[commit]
+        verbose = true
 [color "diff-highlight"]
         oldNormal = red bold
         oldHighlight = red bold 52
         newNormal = green bold
         newHighlight = green bold 22
+[core]
+        editor = vi
+        autocrlf = input
+[diff]
+        algorithm = histogram
+        colorMoved = true
+        mnemonicPrefix = true
+        renames = true
+        submoduleSummary = true
+[init]
+        defaultBranch = main
+[fetch]
+        prune = true
+        pruneTags = true
+        all = true
+[transfer]
+        fsckobjects = true
+[fetch]
+        fsckobjects = true
+[receive]
+        fsckObjects = true
+
+[merge]
+        tool = meld
+        keepBackup = false
 [mergetool]
         keepBackup = false
-
+        conflictstyle = diff3
+[pull]
+        rebase = true
+[push]
+        default = current
+        autoSetupRemote = true
+        followtags  = true
+[rebase]
+        updateRefs = true
+        missingCommitsCheck = warn
+[rerere]
+        enabled = true
+        autoupdate = true
+[status]
+        submoduleSummary = true
+[submodule]
+        recurse = true
+[tag]
+        sort = version:refname
