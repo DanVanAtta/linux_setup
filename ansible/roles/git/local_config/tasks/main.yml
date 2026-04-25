@@ -124,8 +124,6 @@
                 owner: "{{ user }}"
                 group: "{{ group }}"
 
-            - name: export GPG public key to file
-              shell: gpg --armor --export "{{ gpg_key_id }}" > /tmp/gpg-public-key.asc
 
     - name: clean up legacy gpg-preload-passphrase service (no longer needed)
       block:
@@ -156,6 +154,34 @@
       failed_when: false
       changed_when: false
 
+    - name: Verify GPG public key is exportable
+      shell: gpg --armor --export "{{ configured_signing_key.stdout | trim }}" | grep -c 'BEGIN PGP PUBLIC KEY'
+      register: gpg_key_exportable
+      failed_when: false
+      changed_when: false
+      when: configured_signing_key.stdout | trim != ""
+
+    - name: Delete GPG key config file if GPG key is missing from keyring
+      file:
+        path: "{{ git_gpg_key_config }}"
+        state: absent
+      when:
+        - configured_signing_key.stdout | trim != ""
+        - gpg_key_exportable.stdout | default('0') | trim == '0'
+
+    - name: Re-check git signing key after potential unset
+      shell: git config user.signingkey
+      register: configured_signing_key
+      failed_when: false
+      changed_when: false
+
+    - name: Get git user email for GPG export
+      shell: git config user.email
+      register: configured_git_email
+      failed_when: false
+      changed_when: false
+      when: configured_signing_key.stdout | trim != ""
+
     - name: Check if GPG key is already on GitHub
       shell: gh gpg-key list --json keyId -q '.[].keyId' | grep -Fi "{{ configured_signing_key.stdout | trim }}" | head -c1
       register: gpg_key_on_github
@@ -163,28 +189,15 @@
       changed_when: false
       when: configured_signing_key.stdout | trim != ""
 
-    - name: Export GPG public key to file (if not on GitHub yet)
-      shell: gpg --armor --export "{{ configured_signing_key.stdout | trim }}" > /tmp/gpg-public-key.asc
-      when:
-        - configured_signing_key.stdout | trim != ""
-        - gpg_key_on_github.stdout | default('') == ""
-
     - name: Upload GPG public key to GitHub via gh CLI
-      shell: gh gpg-key add /tmp/gpg-public-key.asc
+      shell: gpg --armor --export "{{ configured_git_email.stdout | trim }}" | gh gpg-key add -
       register: gh_gpg_upload
       failed_when:
         - gh_gpg_upload.rc != 0
         - "'already exist' not in gh_gpg_upload.stderr"
       when:
         - configured_signing_key.stdout | trim != ""
-        - gpg_key_on_github.stdout | default('') == ""
-
-    - name: Remove exported public key file
-      file:
-        path: /tmp/gpg-public-key.asc
-        state: absent
-      when:
-        - configured_signing_key.stdout | trim != ""
+        - configured_git_email.stdout | default('') | trim != ""
         - gpg_key_on_github.stdout | default('') == ""
 
 - name: deploy GitHub HTTPS credential helper script
