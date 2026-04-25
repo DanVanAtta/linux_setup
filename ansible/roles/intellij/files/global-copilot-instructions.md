@@ -6,6 +6,7 @@ description: "Global coding standards and preferences"
 - Infer project context from README.md files
 
 ## Behavior
+- Always indicate which architectural decisoins you have made and why, including any tradeoffs or downsides
 - Favor to answer questions and explain options first, then wait for direction
 - When I ask a question, just answer it - don't immediately implement something
 - Do not edit files unless explicitly asked to "make the change" or "update the file"
