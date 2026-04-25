@@ -8,8 +8,8 @@
     classic: true
 
 - name: ensure config directory exists
-  copy:
-    src: global-copilot-instructions.md
+  file:
+    state: directory
     dest: "{{ ansible_facts['env']['HOME'] }}/.config/github-copilot/intellij/"
     mode: 0755
     owner: "{{ user }}"
