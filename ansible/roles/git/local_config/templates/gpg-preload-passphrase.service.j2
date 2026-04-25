@@ -1,10 +1,14 @@
 [Unit]
 Description=Preload GPG passphrase into gpg-agent from GNOME Keyring
-After=gnome-keyring-daemon.service graphical-session.target
-Wants=gnome-keyring-daemon.service
+# graphical-session.target is reached after the desktop (and keyring) are up.
+# Using PartOf means this unit stops/restarts whenever the graphical session does.
+After=graphical-session.target
+PartOf=graphical-session.target
+
 [Service]
 Type=oneshot
 ExecStart=%h/.local/bin/gpg-preload-passphrase.sh
 RemainAfterExit=no
+
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target

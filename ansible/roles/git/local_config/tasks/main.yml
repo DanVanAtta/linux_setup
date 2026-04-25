@@ -61,7 +61,7 @@
       changed_when: false
 
     - name: configure GPG signing key
-#      when: not git_signing_key.stdout
+      when: not git_signing_key.stdout
       block:
         - name: register git author name
           shell: git config user.name
@@ -184,6 +184,10 @@
                 mode: "0644"
                 owner: "{{ user }}"
                 group: "{{ group }}"
+
+            - name: reload systemd user daemon so the new service file is recognised
+              shell: systemctl --user daemon-reload
+              ignore_errors: true
 
             - name: enable GPG passphrase preload service for login
               shell: systemctl --user enable gpg-preload-passphrase.service

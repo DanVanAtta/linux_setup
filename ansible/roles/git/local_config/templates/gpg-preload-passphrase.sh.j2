@@ -1,8 +1,9 @@
 #!/bin/bash
-# Retrieves the GPG passphrase from GNOME Keyring and preloads it into gpg-agent.
-# Run at login via systemd user service so git signing is passwordless every session.
+# Retrieves the GPG passphrase from GNOME Keyring and preloads it into gpg-agent
+# for every keygrip (primary key + all subkeys) so git signing is passwordless
+# every session.  Run at login via the gpg-preload-passphrase systemd user service.
 
-set -euo pipefail
+set -uo pipefail
 
 KEY_ID=$(git config user.signingkey 2>/dev/null || true)
 if [ -z "$KEY_ID" ]; then
@@ -10,22 +11,45 @@ if [ -z "$KEY_ID" ]; then
   exit 0
 fi
 
-KEYGRIP=$(gpg --with-keygrip --list-secret-keys "$KEY_ID" 2>/dev/null \
-  | grep Keygrip | head -1 | awk '{print $3}')
-if [ -z "$KEYGRIP" ]; then
-  echo "gpg-preload: could not determine keygrip for $KEY_ID, skipping." >&2
-  exit 0
-fi
+# Wait up to 30 s for GNOME Keyring to become available and be unlocked.
+PASSPHRASE=""
+for i in $(seq 1 30); do
+  PASSPHRASE=$(secret-tool lookup gpg-key-id "$KEY_ID" 2>/dev/null || true)
+  if [ -n "$PASSPHRASE" ]; then
+    break
+  fi
+  sleep 1
+done
 
-PASSPHRASE=$(secret-tool lookup gpg-key-id "$KEY_ID" 2>/dev/null || true)
 if [ -z "$PASSPHRASE" ]; then
-  echo "gpg-preload: no passphrase found in keyring for $KEY_ID, skipping." >&2
+  echo "gpg-preload: no passphrase found in keyring for $KEY_ID after waiting, skipping." >&2
   exit 0
 fi
 
-# Ensure gpg-agent is running
-gpg-agent --daemon 2>/dev/null || true
+# Ensure gpg-agent is running.
+gpgconf --launch gpg-agent
 
-/usr/lib/gnupg/gpg-preset-passphrase --preset "$KEYGRIP" <<< "$PASSPHRASE"
-echo "gpg-preload: passphrase preloaded for key $KEY_ID (keygrip $KEYGRIP)."
+# Locate gpg-preset-passphrase via gpgconf so the path is always correct.
+GPG_PRESET_PASSPHRASE="$(gpgconf --list-dirs libexecdir)/gpg-preset-passphrase"
+if [ ! -x "$GPG_PRESET_PASSPHRASE" ]; then
+  echo "gpg-preload: gpg-preset-passphrase not found at $GPG_PRESET_PASSPHRASE, skipping." >&2
+  exit 1
+fi
 
+# Collect ALL keygrips (primary key + subkeys) for this signing key.
+# Git may use a subkey to sign, so every keygrip must be preset.
+KEYGRIPS=$(gpg --with-keygrip --list-secret-keys "$KEY_ID" 2>/dev/null \
+  | grep Keygrip | awk '{print $3}')
+
+if [ -z "$KEYGRIPS" ]; then
+  echo "gpg-preload: could not determine any keygrip for $KEY_ID, skipping." >&2
+  exit 0
+fi
+
+while IFS= read -r KEYGRIP; do
+  if "$GPG_PRESET_PASSPHRASE" --preset "$KEYGRIP" <<< "$PASSPHRASE"; then
+    echo "gpg-preload: passphrase preloaded for keygrip $KEYGRIP."
+  else
+    echo "gpg-preload: failed to preload passphrase for keygrip $KEYGRIP." >&2
+  fi
+done <<< "$KEYGRIPS"
