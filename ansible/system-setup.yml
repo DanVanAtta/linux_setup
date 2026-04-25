@@ -68,6 +68,7 @@
     - dot_files
     - git/gh_command
     - git/local_config
+    - git/git_tools
     - git/scm_breeze
     - gnome
     - grub

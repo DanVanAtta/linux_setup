@@ -1,0 +1,21 @@
+---
+
+- name: Ensure ~/work directory exists
+  file:
+    path: "{{ user_home }}/work"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: "0755"
+
+- name: Clone git-tools repo
+  git:
+    repo: "https://github.com/DanVanAtta/git-tools"
+    dest: "{{ user_home }}/work/git-tools"
+    update: false
+
+- name: Add git-tools to PATH in ~/.bashrc
+  lineinfile:
+    path: "{{ user_home }}/.bashrc"
+    line: "export PATH=\"$PATH:{{ user_home }}/work/git-tools\""
+    state: present
