@@ -73,16 +73,6 @@
 
         - name: generate GPG key
           block:
-            - name: generate random passphrase
-              shell: openssl rand -base64 32
-              register: gpg_passphrase_result
-              no_log: true
-
-            - name: set passphrase fact
-              set_fact:
-                gpg_passphrase: "{{ gpg_passphrase_result.stdout }}"
-              no_log: true
-
             - name: render GPG batch keygen file
               template:
                 src: gpg-gen-key-batch.j2
@@ -90,7 +80,6 @@
                 mode: "0600"
                 owner: "{{ user }}"
                 group: "{{ group }}"
-              no_log: true
 
             - name: generate GPG key via batch file
               shell: gpg --batch --gen-key /tmp/gpg-gen-key-batch
@@ -115,7 +104,7 @@
               set_fact:
                 gpg_key_id: "{{ gpg_key_id_result.stdout | trim }}"
 
-            - name: configure gpg-agent for long cache TTL (passwordless experience)
+            - name: configure gpg-agent for long cache TTL
               template:
                 src: gpg-agent.conf.j2
                 dest: "{{ ansible_facts['env']['HOME'] }}/.gnupg/gpg-agent.conf"
@@ -125,14 +114,6 @@
 
             - name: reload gpg-agent
               shell: gpg-connect-agent reloadagent /bye
-              ignore_errors: true
-
-            - name: pre-load passphrase into gpg-agent so subsequent git operations are passwordless
-              shell: >
-                echo "{{ gpg_passphrase }}" |
-                gpg --batch --pinentry-mode loopback --passphrase-fd 0
-                --sign --armor --output /dev/null /dev/null 2>/dev/null || true
-              no_log: true
               ignore_errors: true
 
             - name: deploy git config snippet for GPG signing key
@@ -146,52 +127,26 @@
             - name: export GPG public key to file
               shell: gpg --armor --export "{{ gpg_key_id }}" > /tmp/gpg-public-key.asc
 
-            - name: store passphrase in GNOME Keyring
-              shell: >
-                echo -n "{{ gpg_passphrase }}" |
-                secret-tool store --label="GPG passphrase for git signing ({{ gpg_key_id }})"
-                gpg-key-id "{{ gpg_key_id }}"
-              no_log: true
+    - name: clean up legacy gpg-preload-passphrase service (no longer needed)
+      block:
+        - name: disable legacy preload service if present
+          shell: systemctl --user disable --now gpg-preload-passphrase.service 2>/dev/null || true
+          changed_when: false
 
-            - name: ensure local bin directory exists
-              file:
-                state: directory
-                path: "{{ ansible_facts['env']['HOME'] }}/.local/bin"
-                mode: "0755"
-                owner: "{{ user }}"
-                group: "{{ group }}"
+        - name: remove legacy preload service file
+          file:
+            path: "{{ ansible_facts['env']['HOME'] }}/.config/systemd/user/gpg-preload-passphrase.service"
+            state: absent
 
-            - name: deploy GPG passphrase preload script
-              template:
-                src: gpg-preload-passphrase.sh.j2
-                dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/gpg-preload-passphrase.sh"
-                mode: "0750"
-                owner: "{{ user }}"
-                group: "{{ group }}"
+        - name: remove legacy preload script
+          file:
+            path: "{{ ansible_facts['env']['HOME'] }}/.local/bin/gpg-preload-passphrase.sh"
+            state: absent
 
-            - name: ensure systemd user service directory exists
-              file:
-                state: directory
-                path: "{{ ansible_facts['env']['HOME'] }}/.config/systemd/user"
-                mode: "0755"
-                owner: "{{ user }}"
-                group: "{{ group }}"
-
-            - name: deploy GPG passphrase preload systemd user service
-              template:
-                src: gpg-preload-passphrase.service.j2
-                dest: "{{ ansible_facts['env']['HOME'] }}/.config/systemd/user/gpg-preload-passphrase.service"
-                mode: "0644"
-                owner: "{{ user }}"
-                group: "{{ group }}"
-
-            - name: reload systemd user daemon so the new service file is recognised
-              shell: systemctl --user daemon-reload
-              ignore_errors: true
-
-            - name: enable GPG passphrase preload service for login
-              shell: systemctl --user enable gpg-preload-passphrase.service
-              ignore_errors: true
+        - name: reload systemd user daemon after cleanup
+          shell: systemctl --user daemon-reload
+          changed_when: false
+          ignore_errors: true
 
 - name: Upload GPG public key to GitHub (idempotent)
   block:
