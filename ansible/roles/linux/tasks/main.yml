@@ -80,8 +80,16 @@
       snap:
         name:
           - brave
-          - intellij-idea-ultimate
           - steam
+
+    - name: install classic snap packages
+      when: not ansible_check_mode
+      become: true
+      notify: snapd_running
+      snap:
+        name:
+          - intellij-idea-ultimate
+        classic: true
 
     - name: make sure snapd is still present
       when: not ansible_check_mode
