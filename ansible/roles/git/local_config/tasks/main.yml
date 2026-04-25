@@ -181,6 +181,14 @@
         - configured_signing_key.stdout | trim != ""
         - gpg_key_on_github.stdout | default('') == ""
 
+- name: deploy GitHub HTTPS credential helper script
+  template:
+    src: github-credential-helper.sh
+    dest: "{{ git_local_config_dir }}/github-credential-helper.sh"
+    mode: "0750"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+
 - name: deploy GitHub HTTPS credential helper config
   template:
     src: github-credential.local.config

@@ -1,5 +1,9 @@
+#!/bin/sh
 # Git credential helper for GitHub HTTPS using GITHUB_TOKEN env variable.
 # This allows 'git clone https://github.com/...' and other HTTPS operations
 # to authenticate automatically when GITHUB_TOKEN is set in the environment.
-[credential "https://github.com"]
-        helper = !{{ git_local_config_dir }}/github-credential-helper.sh
+if [ "$1" = "get" ]; then
+  echo "username=token"
+  echo "password=$GITHUB_TOKEN"
+fi
+
