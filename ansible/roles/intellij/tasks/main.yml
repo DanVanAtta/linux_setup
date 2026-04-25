@@ -1,0 +1,24 @@
+- name: install classic snap packages
+  when: not ansible_check_mode
+  become: true
+  notify: snapd_running
+  snap:
+    name:
+      - intellij-idea-ultimate
+    classic: true
+
+- name: ensure config directory exists
+  copy:
+    src: global-copilot-instructions.md
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/github-copilot/intellij/"
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+
+- name: deploy global copilot instructions file
+  copy:
+    src: global-copilot-instructions.md
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/github-copilot/intellij/global-copilot-instructions.md"
+    mode: 0644
+    owner: "{{ user }}"
+    group: "{{ group }}"

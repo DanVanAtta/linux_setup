@@ -1,0 +1,1 @@
+~/.config/github-copilot/intellij/global-copilot-instructions.md

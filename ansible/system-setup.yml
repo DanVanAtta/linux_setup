@@ -71,5 +71,6 @@
     - git/scm_breeze
     - gnome
     - grub
+    - intellij
     - {name: host_blocking, tags: host_blocking}
     - linux
