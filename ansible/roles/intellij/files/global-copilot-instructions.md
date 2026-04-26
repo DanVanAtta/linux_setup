@@ -31,3 +31,6 @@ description: "Global coding standards and preferences"
 - Prefer black-box tests over white-box tests
 - Minimize mocking - test real code paths when practical
 - Tests should verify application logic, not underlying libraries
+
+## Git
+- Always use 'git --no-pager' for any git command run in a terminal
