@@ -24,6 +24,9 @@ description: "Global coding standards and preferences"
 - Use meaningful variable and function names
 - Keep functions small and focused on one responsibility
 
+## Writing Style
+- Never use em-dashes (—); use a regular hyphen-minus (-) or rewrite the sentence instead.
+
 ## Code Comments
 - Never write comments that reflect the current prompt, ticket, or initiative; comments must stand alone for a future reader with no prior context.
 
